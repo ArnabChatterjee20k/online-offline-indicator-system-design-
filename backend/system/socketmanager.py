@@ -9,8 +9,9 @@ sio = socketio.AsyncServer(async_mode='asgi',cors_allowed_origins="*")
 socket_app = socketio.ASGIApp(sio)
 
 FORMAT = "%Y-%m-%d %H:%M:%S"
-FIVE_MINUTES = 5*60
+FIVE_MINUTES = 10
 
+sids = set()
 async def send_periodic_messages(sid):
     while True:
         await asyncio.sleep(1)
@@ -25,8 +26,14 @@ async def broadcast_user_online(name):
     print("sending online")
     await sio.emit("online",name)
 
+async def broadcast_user_offline(name, timestamp):
+    print(sids)
+    print("sending offline", name, timestamp)
+    
+    await sio.emit("offline", {"name": name, "timestamp": timestamp})
 @sio.event
 async def connect(sid,environ,*args):
+    sids.add(sid)
     scope = environ.get("asgi.scope")
     # check auth here as well
     # maybe we can also do this the user should first hit the http /
@@ -51,6 +58,7 @@ async def connect(sid,environ,*args):
 
 @sio.event
 async def disconnect(sid):
+    sids.remove(sid)
     # TODO: check auth
     # update the cache
     print("disconnected",sid)

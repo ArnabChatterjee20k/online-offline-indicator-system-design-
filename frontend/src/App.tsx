@@ -53,16 +53,28 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         )
       );
     }
+    
+    function setOfflineUser(value: string) {
+      setFooEvents((prev) => [...prev, value]);
+    
+      setUserList((users) =>
+        users.map((user) =>
+          // @ts-ignore
+          user.name === value["name"] ? { ...user, last_seen: value["timestamp"] } : user
+        )
+      );
+    }
 
     newSocket.on("connect", onConnect);
     newSocket.on("disconnect", onDisconnect);
     newSocket.on("online", setOnlineUser);
+    newSocket.on("offline", setOfflineUser);
 
     const interval = setInterval(() => {
       if (newSocket.connected) {
         newSocket.emit("heartbeat", { timestamp: Date.now() });
       }
-    }, 30000);
+    }, 300);
 
     return () => {
       clearInterval(interval);
@@ -70,6 +82,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       newSocket.off("connect", onConnect);
       newSocket.off("disconnect", onDisconnect);
       newSocket.off("online", setOnlineUser);
+      newSocket.off("offline", setOfflineUser);
     };
   }, []);
 

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from system.socketmanager import socket_app
+from system.socketmanager import socket_app , broadcast_user_offline
 from system.db import test_db, sessionmanager
 from system.models import update_user
 from system.cache import Cache
@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 async def callback(name,timestamp):
     async with sessionmanager.session() as session:
         await update_user(session=session,last_seen=timestamp,name=name)
+        await broadcast_user_offline(name,timestamp)
 
 @asynccontextmanager
 async def startup_event(app):
