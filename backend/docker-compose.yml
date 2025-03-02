@@ -4,3 +4,9 @@ services:
     ports:
       - "6379:6379"
     container_name: "online-offline-redis"
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - 5540:5540

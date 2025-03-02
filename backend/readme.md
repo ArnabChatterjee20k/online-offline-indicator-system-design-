@@ -1,5 +1,13 @@
-resources -> https://stackoverflow.com/questions/76322463/how-to-initialize-a-global-object-or-variable-and-reuse-it-in-every-fastapi-endp
-https://gist.github.com/nicksonthc/525742d9a81d3950b443810e8899ee0e
+resources -> 
+1. Sharing app state in fastapi - https://stackoverflow.com/questions/76322463/how-to-initialize-a-global-object-or-variable-and-reuse-it-in-every-fastapi-endp
+
+2. sharing app state in fastapi - https://gist.github.com/nicksonthc/525742d9a81d3950b443810e8899ee0e
+
+3. Using shadow key for Solving the problem of not able to access the values of the expired key in the expired key nofication. 
+Basically setting up two keys for the same key. key and shadow:key.
+https://stackoverflow.com/questions/18328058/redis-notifications-get-key-and-value-on-expiration
+
+4. Notification config -> https://redis.io/docs/latest/develop/use/keyspace-notifications/
 
 ### Design Plan
 1. pinging api whenever I am coming online and offline
@@ -30,3 +38,23 @@ problem -> what if a lot of events come at once?
 5. solution -> snapshot based. At every 5 mins. Run a script to scan the cache and track all users online
 
 Last problem -> not instant and majorly eventually consistent
+
+### Configuring vscode with fastapi and debugger
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "FastAPI Debugger",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "fastapi",
+            "args": [
+                "dev"
+            ],
+            "jinja": true
+        }
+    ]
+}
+
+```

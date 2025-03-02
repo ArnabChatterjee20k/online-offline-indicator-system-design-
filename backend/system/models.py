@@ -9,8 +9,25 @@ class User(Base):
 
 from sqlalchemy.ext.asyncio import AsyncSession
 async def save_user(session:AsyncSession,name,last_seen):
-    with session:
-        user = User(name=name,last_seen=last_seen,color="red")
-        await session.add(user)
-        await session.commit()
+    query = select(User).filter(User.name==name)
+    user = (await session.execute(query)).scalar()
+    if user:
         return user
+    user = User(name=name,last_seen=last_seen,color="")
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+    return user
+
+async def get_users(session:AsyncSession,name:str):
+    query = select(User)
+    return (await session.execute(query)).scalars().all()
+
+from sqlalchemy import select
+async def update_user(session:AsyncSession,name,last_seen):
+    query = select(User).filter(User.name == name)
+    user = (await session.execute(query)).scalar()
+    if not user:
+        return
+    user.last_seen = last_seen
+    await session.commit()
